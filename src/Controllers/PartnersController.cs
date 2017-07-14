@@ -13,61 +13,18 @@ namespace MeetingManagementServer.Controllers
     {
         private EfDataStore _dataStore;
 
-        public PartnersController(EfDataStore dataStore)
-        {
-            _dataStore = dataStore;
-        }
-
         private Expression<Func<Partner, PartnerDto>> ToPartnerDtoExpression => p => new PartnerDto
         {
             Id = p.Id,
             Name = p.Name,
             Email = p.Email,
+            Country = p.Country.Name,
             AvailableDates = _dataStore.AvailableDates.Where(d => d.Partner.Id == p.Id).Select(d => d.Date).ToArray()
         };
 
-        private PartnerDto ToPartnerDto(Partner partner, AvailableDate[] availableDates)
-        { 
-            return new PartnerDto
-            {
-                Id = partner.Id,
-                Name = partner.Name,
-                Email = partner.Email,
-                AvailableDates = availableDates.Select(d => d.Date).ToArray()
-            };
-        }
-
-        private Partner ToPartner(PartnerDto dto)
+        public PartnersController(EfDataStore dataStore)
         {
-            var partner = new Partner
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                Email = dto.Email                
-            };
-                
-            return partner;
-        }
-
-        private AvailableDate[] ToAvailableDates(PartnerDto dto, Partner partner)
-        {
-            if (dto.AvailableDates == null)
-            {
-                return null;
-            }
-
-            return dto.AvailableDates
-                      .Distinct()
-                      .Select(d => new AvailableDate { Partner = partner, Date = d })
-                      .ToArray();
-        }
-
-        private IEnumerable<string> Validate(Partner partner)
-        {
-            if (_dataStore.Partners.Any(x => x.Id != partner.Id && x.Email == partner.Email))
-            {
-                yield return "Email is not unique";
-            }
+            _dataStore = dataStore;
         }
 
         // GET api/partners
@@ -110,6 +67,11 @@ namespace MeetingManagementServer.Controllers
             {
                 return BadRequest(string.Join(Environment.NewLine, validationResult));
             }
+
+            if (partner.Country.Id == 0)
+            {
+                _dataStore.Countries.Add(partner.Country);
+            }
             
             var availableDates = ToAvailableDates(partnerDto, partner);
             
@@ -133,6 +95,11 @@ namespace MeetingManagementServer.Controllers
                 return BadRequest("Partner is not specified correctly");
             }
 
+            if (string.IsNullOrWhiteSpace(partnerDto.Country))
+            {
+                return BadRequest("Country is not specified correctly");
+            }
+
             if (id == 0)
             {
                 return BadRequest("To add a new partner, use POST request");
@@ -151,6 +118,11 @@ namespace MeetingManagementServer.Controllers
             if (validationResult.Any())
             {
                 return BadRequest(string.Join(Environment.NewLine, validationResult));
+            }
+
+            if (partner.Country.Id == 0)
+            {
+                _dataStore.Countries.Add(partner.Country);
             }
 
             var dates = _dataStore.AvailableDates.Where(d => d.Partner.Id == partnerDto.Id).ToArray();
@@ -187,6 +159,52 @@ namespace MeetingManagementServer.Controllers
             _dataStore.Partners.Remove(partner);
             _dataStore.SaveChanges();
             return Ok(ToPartnerDto(partner, availableDates));
+        }
+
+        private PartnerDto ToPartnerDto(Partner partner, AvailableDate[] availableDates)
+        {
+            return new PartnerDto
+            {
+                Id = partner.Id,
+                Name = partner.Name,
+                Email = partner.Email,
+                Country = partner.Country.Name,
+                AvailableDates = availableDates.Select(d => d.Date).ToArray()
+            };
+        }
+
+        private Partner ToPartner(PartnerDto dto)
+        {
+            var partner = new Partner
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Email = dto.Email,
+                Country = _dataStore.Countries.SingleOrDefault(c => c.Name == dto.Country.ToUpperInvariant()) ?? new Country { Name = dto.Country.ToUpperInvariant() }
+            };
+
+            return partner;
+        }
+
+        private AvailableDate[] ToAvailableDates(PartnerDto dto, Partner partner)
+        {
+            if (dto.AvailableDates == null)
+            {
+                return null;
+            }
+
+            return dto.AvailableDates
+                      .Distinct()
+                      .Select(d => new AvailableDate { Partner = partner, Date = d })
+                      .ToArray();
+        }
+
+        private IEnumerable<string> Validate(Partner partner)
+        {
+            if (_dataStore.Partners.Any(x => x.Id != partner.Id && x.Email == partner.Email))
+            {
+                yield return "Email is not unique";
+            }
         }
     }
 }

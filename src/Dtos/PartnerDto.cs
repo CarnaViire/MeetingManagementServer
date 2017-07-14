@@ -10,6 +10,8 @@ namespace MeetingManagementServer.Models
 
         public string Email { get; set; }
 
+        public string Country { get; set; }
+
         public DateTime[] AvailableDates { get; set; }
     }
 }

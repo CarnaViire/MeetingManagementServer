@@ -8,9 +8,10 @@ using MeetingManagementServer.Services;
 namespace MeetingManagementServer.Migrations
 {
     [DbContext(typeof(EfDataStore))]
-    partial class EfDataStoreModelSnapshot : ModelSnapshot
+    [Migration("20170714034735_AddCountry")]
+    partial class AddCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
