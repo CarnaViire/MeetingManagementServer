@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MeetingManagementServer.Services;
 using Microsoft.EntityFrameworkCore;
+using Autofac;
 
 namespace MeetingManagementServer
 {
@@ -27,7 +28,12 @@ namespace MeetingManagementServer
         {
             string con = "Server=(localdb)\\mssqllocaldb;Database=meetingMngrDb;Trusted_Connection=True;MultipleActiveResultSets=true";
             services.AddDbContext<EfDataStore>(options => options.UseSqlServer(con));
+
+            // Add framework services
             services.AddMvc();
+
+            // Register application services
+            services.AddScoped<EventManager, EventManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +43,17 @@ namespace MeetingManagementServer
             loggerFactory.AddDebug();
 
             app.UseMvc();
+        }
+
+        // ConfigureContainer is where you can register things directly
+        // with Autofac. This runs after ConfigureServices so the things
+        // here will override registrations made in ConfigureServices.
+        // Don't build the container; that gets done for you. If you
+        // need a reference to the container, you need to use the
+        // "Without ConfigureContainer" mechanism shown later.
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new AutofacModule());
         }
     }
 }
