@@ -69,6 +69,11 @@ namespace MeetingManagementServer.Controllers
                 return BadRequest("Partner is not specified correctly");
             }
 
+            if (string.IsNullOrWhiteSpace(partnerDto.Country))
+            {
+                return BadRequest("Country is not specified correctly");
+            }
+
             if (partnerDto.Id != 0)
             {
                 return BadRequest("To update an existing partner, use PUT request");

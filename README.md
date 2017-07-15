@@ -1,6 +1,6 @@
 # MeetingManagementServer
 
-ASP.NET Core Web API
+Web API for managing meetings based on ASP.NET Core
 
 ## Show all partners
 
