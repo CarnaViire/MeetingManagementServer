@@ -5,6 +5,7 @@ using MeetingManagementServer.Models;
 using System.Linq.Expressions;
 using System;
 using MeetingManagementServer.Services.Interfaces;
+using MeetingManagementServer.Services;
 
 namespace MeetingManagementServer.Controllers
 {
@@ -21,15 +22,6 @@ namespace MeetingManagementServer.Controllers
         private IRepository<AvailableDate> _availableDateRepository;
 
         private ITransactionFactory _transactionFactory;
-
-        private Expression<Func<Partner, PartnerDto>> ToPartnerDtoExpression => p => new PartnerDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Email = p.Email,
-            Country = p.Country.Name,
-            AvailableDates = _availableDateRepository.GetAll().Where(d => d.Partner.Id == p.Id).Select(d => d.Date).ToArray()
-        };
 
         public PartnersController(IRepository<Partner> partnerRepository, 
             IRepository<Country> countryRepository, 
@@ -48,7 +40,7 @@ namespace MeetingManagementServer.Controllers
         [HttpGet]
         public IEnumerable<PartnerDto> Get()
         {
-            return _partnerRepository.GetAll().Select(ToPartnerDtoExpression).ToArray();
+            return GetPartnerDtoQuery().ToArray();
         }
 
         /// <summary>
@@ -58,11 +50,13 @@ namespace MeetingManagementServer.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var partnerDto = _partnerRepository.GetAll().Where(x => x.Id == id).Select(ToPartnerDtoExpression).SingleOrDefault();
+            var partnerDto = GetPartnerDtoQuery().SingleOrDefault(p => p.Id == id);
+
             if (partnerDto == null)
             {
                 return NotFound();
             }
+
             return new ObjectResult(partnerDto);
         }
 
@@ -193,6 +187,23 @@ namespace MeetingManagementServer.Controllers
             return Ok(ToPartnerDto(partner, availableDates));
         }
 
+        /// <summary>
+        /// Delete all partners
+        /// </summary>
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            _transactionFactory.InTransaction(() =>
+            {
+                _availableDateRepository.DeleteMany(_availableDateRepository.GetAll().ToArray());
+
+                _partnerRepository.DeleteMany(_partnerRepository.GetAll().ToArray());
+
+                _countryRepository.DeleteMany(_countryRepository.GetAll().ToArray());
+            });
+            return Ok();
+        }
+
         private PartnerDto ToPartnerDto(Partner partner, AvailableDate[] availableDates)
         {
             return new PartnerDto
@@ -237,6 +248,20 @@ namespace MeetingManagementServer.Controllers
             {
                 yield return "Email is not unique";
             }
+        }
+
+        private IQueryable<PartnerDto> GetPartnerDtoQuery()
+        {
+            var datesQuery = _availableDateRepository.GetAll();
+
+            return _partnerRepository.GetAll().Select(p => new PartnerDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Email = p.Email,
+                Country = p.Country.Name,
+                AvailableDates = datesQuery.Where(d => d.Partner.Id == p.Id).Select(d => d.Date).ToArray()
+            });
         }
     }
 }
