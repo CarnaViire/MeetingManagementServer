@@ -1,12 +1,24 @@
-﻿using System;
-using Autofac.Core;
+﻿using Autofac;
+using MeetingManagementServer.Services;
+using MeetingManagementServer.Services.Interfaces;
 
 namespace MeetingManagementServer
 {
-    internal class AutofacModule : IModule
+    internal class AutofacModule : Module
     {
-        public void Configure(IComponentRegistry componentRegistry)
+        protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<EfTransactionFactory>()
+                 .As<ITransactionFactory>()
+                 .InstancePerLifetimeScope();
+
+            builder.RegisterGeneric(typeof(EfRepository<>))
+                 .As(typeof(IRepository<>))
+                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<MeetingManager>()
+                 .As<IMeetingManager>()
+                 .InstancePerLifetimeScope();
         }
     }
 }

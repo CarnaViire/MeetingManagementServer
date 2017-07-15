@@ -2,7 +2,7 @@
 
 namespace MeetingManagementServer.Models
 {
-    public class EventDto
+    public class MeetingDto
     {
         public string Country { get; set; }
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MeetingManagementServer.Models
 {
-    public class AvailableDate
+    public class AvailableDate : IEntity
     {
         [Required]
         public long Id { get; set; }

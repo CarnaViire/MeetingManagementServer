@@ -1,17 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using MeetingManagementServer.Services;
 using MeetingManagementServer.Models;
 using System.Linq.Expressions;
 using System;
+using MeetingManagementServer.Services.Interfaces;
 
 namespace MeetingManagementServer.Controllers
 {
+    /// <summary>
+    /// Controller to provide REST API to partners
+    /// </summary>
     [Route("api/[controller]")]
     public class PartnersController : Controller
     {
-        private EfDataStore _dataStore;
+        private IRepository<Partner> _partnerRepository;
+
+        private IRepository<Country> _countryRepository;
+
+        private IRepository<AvailableDate> _availableDateRepository;
+
+        private ITransactionFactory _transactionFactory;
 
         private Expression<Func<Partner, PartnerDto>> ToPartnerDtoExpression => p => new PartnerDto
         {
@@ -19,26 +28,37 @@ namespace MeetingManagementServer.Controllers
             Name = p.Name,
             Email = p.Email,
             Country = p.Country.Name,
-            AvailableDates = _dataStore.AvailableDates.Where(d => d.Partner.Id == p.Id).Select(d => d.Date).ToArray()
+            AvailableDates = _availableDateRepository.GetAll().Where(d => d.Partner.Id == p.Id).Select(d => d.Date).ToArray()
         };
 
-        public PartnersController(EfDataStore dataStore)
+        public PartnersController(IRepository<Partner> partnerRepository, 
+            IRepository<Country> countryRepository, 
+            IRepository<AvailableDate> availableDateRepository,
+            ITransactionFactory transactionFactory)
         {
-            _dataStore = dataStore;
+            _partnerRepository = partnerRepository;
+            _countryRepository = countryRepository;
+            _availableDateRepository = availableDateRepository;
+            _transactionFactory = transactionFactory;
         }
 
-        // GET api/partners
+        /// <summary>
+        /// Get all partners
+        /// </summary>
         [HttpGet]
         public IEnumerable<PartnerDto> Get()
         {
-            return _dataStore.Partners.Select(ToPartnerDtoExpression).ToArray();
+            return _partnerRepository.GetAll().Select(ToPartnerDtoExpression).ToArray();
         }
 
-        // GET api/partners/5
+        /// <summary>
+        /// Get specific partner
+        /// </summary>
+        /// <param name="id">Partner id</param>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var partnerDto = _dataStore.Partners.Where(x => x.Id == id).Select(ToPartnerDtoExpression).SingleOrDefault();
+            var partnerDto = _partnerRepository.GetAll().Where(x => x.Id == id).Select(ToPartnerDtoExpression).SingleOrDefault();
             if (partnerDto == null)
             {
                 return NotFound();
@@ -46,7 +66,9 @@ namespace MeetingManagementServer.Controllers
             return new ObjectResult(partnerDto);
         }
 
-        // POST api/partners
+        /// <summary>
+        /// Save a new partner
+        /// </summary>
         [HttpPost]
         public IActionResult Post([FromBody]PartnerDto partnerDto)
         {
@@ -67,26 +89,29 @@ namespace MeetingManagementServer.Controllers
             {
                 return BadRequest(string.Join(Environment.NewLine, validationResult));
             }
-
-            if (partner.Country.Id == 0)
-            {
-                _dataStore.Countries.Add(partner.Country);
-            }
             
             var availableDates = ToAvailableDates(partnerDto, partner);
-            
-            _dataStore.Partners.Add(partner);
-            if (availableDates != null && availableDates.Any())
-            {
-                _dataStore.AvailableDates.AddRange(availableDates);
-            }
 
-            _dataStore.SaveChanges();
+            _transactionFactory.InTransaction(() => {
+                if (partner.Country.Id == 0)
+                {
+                    _countryRepository.Save(partner.Country);
+                }
+
+                _partnerRepository.Save(partner);
+                if (availableDates != null && availableDates.Any())
+                {
+                    _availableDateRepository.SaveMany(availableDates);
+                }
+            });
 
             return Ok(ToPartnerDto(partner, availableDates));
         }
 
-        // PUT api/partners/5
+        /// <summary>
+        /// Update the specific partner
+        /// </summary>
+        /// <param name="id">Partner id</param>
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]PartnerDto partnerDto)
         {
@@ -107,12 +132,13 @@ namespace MeetingManagementServer.Controllers
 
             partnerDto.Id = id;
             
-            if (!_dataStore.Partners.Any(x => x.Id == id))
+            if (!_partnerRepository.GetAll().Any(x => x.Id == id))
             {
                 return NotFound();
             }
 
             var partner = ToPartner(partnerDto);
+            var availableDates = ToAvailableDates(partnerDto, partner);
 
             var validationResult = Validate(partner).ToArray();
             if (validationResult.Any())
@@ -120,44 +146,50 @@ namespace MeetingManagementServer.Controllers
                 return BadRequest(string.Join(Environment.NewLine, validationResult));
             }
 
-            if (partner.Country.Id == 0)
+            _transactionFactory.InTransaction(() =>
             {
-                _dataStore.Countries.Add(partner.Country);
-            }
+                if (partner.Country.Id == 0)
+                {
+                    _countryRepository.Save(partner.Country);
+                }
 
-            var dates = _dataStore.AvailableDates.Where(d => d.Partner.Id == partnerDto.Id).ToArray();
-            if (dates.Any())
-            {
-                _dataStore.AvailableDates.RemoveRange(dates);
-            }
-            var availableDates = ToAvailableDates(partnerDto, partner);
+                var dates = _availableDateRepository.GetAll().Where(d => d.Partner.Id == partnerDto.Id).ToArray();
+                if (dates.Any())
+                {
+                    _availableDateRepository.DeleteMany(dates);
+                }
 
-            _dataStore.Partners.Update(partner);
-            _dataStore.AvailableDates.AddRange(availableDates);
-
-            _dataStore.SaveChanges();
+                _partnerRepository.Update(partner);
+                _availableDateRepository.SaveMany(availableDates);
+            });
 
             return Ok(ToPartnerDto(partner, availableDates));
         }
 
-        // DELETE api/partners/5
+        /// <summary>
+        /// Delete the specific partner
+        /// </summary>
+        /// <param name="id">Partner id</param>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var partner = _dataStore.Partners.SingleOrDefault(x => x.Id == id);
+            var partner = _partnerRepository.Get(id);
             if (partner == null)
             {
                 return NotFound();
             }
 
-            var availableDates = _dataStore.AvailableDates.Where(d => d.Partner.Id == id).ToArray();
-            if (availableDates.Any())
-            {
-                _dataStore.AvailableDates.RemoveRange(availableDates);
-            }
+            var availableDates = _availableDateRepository.GetAll().Where(d => d.Partner.Id == id).ToArray();
 
-            _dataStore.Partners.Remove(partner);
-            _dataStore.SaveChanges();
+            _transactionFactory.InTransaction(() =>
+            {
+                if (availableDates.Any())
+                {
+                    _availableDateRepository.DeleteMany(availableDates);
+                }
+
+                _partnerRepository.Delete(partner);
+            });
             return Ok(ToPartnerDto(partner, availableDates));
         }
 
@@ -180,7 +212,7 @@ namespace MeetingManagementServer.Controllers
                 Id = dto.Id,
                 Name = dto.Name,
                 Email = dto.Email,
-                Country = _dataStore.Countries.SingleOrDefault(c => c.Name == dto.Country.ToUpperInvariant()) ?? new Country { Name = dto.Country.ToUpperInvariant() }
+                Country = _countryRepository.GetAll().SingleOrDefault(c => c.Name == dto.Country.ToUpperInvariant()) ?? new Country { Name = dto.Country.ToUpperInvariant() }
             };
 
             return partner;
@@ -195,13 +227,13 @@ namespace MeetingManagementServer.Controllers
 
             return dto.AvailableDates
                       .Distinct()
-                      .Select(d => new AvailableDate { Partner = partner, Date = d })
+                      .Select(d => new AvailableDate { Partner = partner, Date = d.Date })
                       .ToArray();
         }
 
         private IEnumerable<string> Validate(Partner partner)
         {
-            if (_dataStore.Partners.Any(x => x.Id != partner.Id && x.Email == partner.Email))
+            if (_partnerRepository.GetAll().Any(x => x.Id != partner.Id && x.Email == partner.Email))
             {
                 yield return "Email is not unique";
             }

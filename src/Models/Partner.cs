@@ -2,7 +2,7 @@
 
 namespace MeetingManagementServer.Models
 {
-    public class Partner
+    public class Partner : IEntity
     {
         [Required]
         public long Id { get; set; }

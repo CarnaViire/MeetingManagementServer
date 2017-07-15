@@ -2,7 +2,7 @@
 
 namespace MeetingManagementServer.Models
 {
-    public class Country
+    public class Country : IEntity
     {
         [Required]
         public long Id { get; set; }

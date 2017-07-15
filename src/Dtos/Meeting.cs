@@ -3,7 +3,7 @@ using System;
 
 namespace MeetingManagementServer.Dtos
 {
-    public class Event
+    public class Meeting
     {
         public Country Country { get; set; }
 
