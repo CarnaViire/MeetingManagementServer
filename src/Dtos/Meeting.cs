@@ -7,7 +7,7 @@ namespace MeetingManagementServer.Dtos
     {
         public Country Country { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         public Partner[] Attendees { get; set; }
     }

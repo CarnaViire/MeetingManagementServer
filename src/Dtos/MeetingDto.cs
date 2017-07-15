@@ -6,7 +6,7 @@ namespace MeetingManagementServer.Models
     {
         public string Country { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         public AttendeeDto[] Attendees { get; set; }
     }
