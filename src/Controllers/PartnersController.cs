@@ -2,10 +2,8 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using MeetingManagementServer.Models;
-using System.Linq.Expressions;
 using System;
 using MeetingManagementServer.Services.Interfaces;
-using MeetingManagementServer.Services;
 
 namespace MeetingManagementServer.Controllers
 {
@@ -21,12 +19,12 @@ namespace MeetingManagementServer.Controllers
 
         private IRepository<AvailableDate> _availableDateRepository;
 
-        private ITransactionFactory _transactionFactory;
+        private ITransactionManager _transactionFactory;
 
         public PartnersController(IRepository<Partner> partnerRepository, 
             IRepository<Country> countryRepository, 
             IRepository<AvailableDate> availableDateRepository,
-            ITransactionFactory transactionFactory)
+            ITransactionManager transactionFactory)
         {
             _partnerRepository = partnerRepository;
             _countryRepository = countryRepository;

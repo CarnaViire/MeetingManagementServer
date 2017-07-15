@@ -2,6 +2,9 @@
 
 namespace MeetingManagementServer.Models
 {
+    /// <summary>
+    /// Partner
+    /// </summary>
     public class Partner : IEntity
     {
         [Required]

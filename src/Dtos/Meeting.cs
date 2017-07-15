@@ -3,6 +3,9 @@ using System;
 
 namespace MeetingManagementServer.Dtos
 {
+    /// <summary>
+    /// Meeting with partners
+    /// </summary>
     public class Meeting
     {
         public Country Country { get; set; }

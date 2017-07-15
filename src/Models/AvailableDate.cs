@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MeetingManagementServer.Models
 {
+    /// <summary>
+    /// A date available for a meeting
+    /// </summary>
     public class AvailableDate : IEntity
     {
         [Required]

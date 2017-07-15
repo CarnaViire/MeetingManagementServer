@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace MeetingManagementServer.Services
 {
+    /// <summary>
+    /// Meeting manager to plan meetings with partners in countries
+    /// </summary>
     public class MeetingManager : IMeetingManager
     {
         private IRepository<Partner> _partnerRepository;
@@ -24,6 +27,9 @@ namespace MeetingManagementServer.Services
             _availableDateRepository = availableDateRepository;
         }
 
+        /// <summary>
+        /// Get meetings of 2 day length with maximal attendance for all countries
+        /// </summary>
         public Meeting[] BuildMeetings()
         {
             var partnerGroups = _partnerRepository.GetAll()
@@ -42,6 +48,9 @@ namespace MeetingManagementServer.Services
             return partnerGroups.Select(g => BuildMeeting(countries[g.Key], g.Value, availableDatesByPartner)).ToArray();
         }
 
+        /// <summary>
+        /// Get the meeting of 2 day length with maximal attendance for a specific country
+        /// </summary>
         public Meeting BuildMeeting(Country country)
         {
             var partners = _partnerRepository.GetAll().Where(p => p.Country.Id == country.Id).ToArray();

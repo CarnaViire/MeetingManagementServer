@@ -1,17 +1,24 @@
 ﻿using MeetingManagementServer.Services.Interfaces;
 using System;
 
-namespace MeetingManagementServer.Services
+namespace MeetingManagementServer.Services.EntityFramework
 {
-    public class EfTransactionFactory : ITransactionFactory
+    /// <summary>
+    /// Entity Framework transaction manager
+    /// </summary>
+    public class EfTransactionManager : ITransactionManager
     {
         private EfDataStore _efDataStore;
 
-        public EfTransactionFactory(EfDataStore efDataStore)
+        public EfTransactionManager(EfDataStore efDataStore)
         {
             _efDataStore = efDataStore;
         }
 
+        /// <summary>
+        /// Execute the action in database transaction
+        /// </summary>
+        /// <param name="action">Action to execute</param>
         public void InTransaction(Action action)
         {
             using (var transaction = _efDataStore.Database.BeginTransaction())
@@ -20,7 +27,7 @@ namespace MeetingManagementServer.Services
                 {
                     action();
 
-                    Flush();
+                    _efDataStore.SaveChanges();
 
                     transaction.Commit();
                 }
@@ -31,11 +38,6 @@ namespace MeetingManagementServer.Services
                     throw;
                 }
             }
-        }
-
-        public void Flush()
-        {
-            _efDataStore.SaveChanges();
         }
     }
 }

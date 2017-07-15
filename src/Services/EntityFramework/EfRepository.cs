@@ -3,8 +3,12 @@ using MeetingManagementServer.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace MeetingManagementServer.Services
+namespace MeetingManagementServer.Services.EntityFramework
 {
+    /// <summary>
+    /// Entity Framework repository
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type</typeparam>
     public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
     {
         private EfDataStore _dataStore;

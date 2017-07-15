@@ -2,6 +2,9 @@
 
 namespace MeetingManagementServer.Models
 {
+    /// <summary>
+    /// Country
+    /// </summary>
     public class Country : IEntity
     {
         [Required]

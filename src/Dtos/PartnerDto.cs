@@ -2,6 +2,9 @@
 
 namespace MeetingManagementServer.Models
 {
+    /// <summary>
+    /// Partner DTO
+    /// </summary>
     public class PartnerDto
     {
         public long Id { get; set; }

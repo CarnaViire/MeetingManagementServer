@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MeetingManagementServer.Services;
+using MeetingManagementServer.Services.EntityFramework;
 using MeetingManagementServer.Services.Interfaces;
 
 namespace MeetingManagementServer
@@ -8,8 +9,8 @@ namespace MeetingManagementServer
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<EfTransactionFactory>()
-                 .As<ITransactionFactory>()
+            builder.RegisterType<EfTransactionManager>()
+                 .As<ITransactionManager>()
                  .InstancePerLifetimeScope();
 
             builder.RegisterGeneric(typeof(EfRepository<>))

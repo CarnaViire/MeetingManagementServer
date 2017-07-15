@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MeetingManagementServer.Services;
+using MeetingManagementServer.Services.EntityFramework;
 
 namespace MeetingManagementServer.Migrations
 {
