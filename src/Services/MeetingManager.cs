@@ -30,7 +30,7 @@ namespace MeetingManagementServer.Services
         /// <summary>
         /// Get meetings of 2 day length with maximal attendance for all countries
         /// </summary>
-        public Meeting[] BuildMeetings()
+        public Meeting[] BuildAllMeetings()
         {
             var partnerGroups = _partnerRepository.GetAll()
                 .GroupBy(p => p.Country.Id)

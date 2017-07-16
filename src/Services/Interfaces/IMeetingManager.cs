@@ -10,7 +10,7 @@ namespace MeetingManagementServer.Services.Interfaces
         /// <summary>
         /// Get meetings of 2 day length with maximal attendance for all countries
         /// </summary>
-        Meeting[] BuildMeetings();
+        Meeting[] BuildAllMeetings();
 
         /// <summary>
         /// Get the meeting of 2 day length with maximal attendance for a specific country

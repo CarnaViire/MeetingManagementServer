@@ -26,7 +26,7 @@ namespace MeetingManagementServer.Controllers
         [HttpGet]
         public IActionResult BuildAll()
         {
-            var result = _meetingManager.BuildMeetings().Select(e => new MeetingDto
+            var result = _meetingManager.BuildAllMeetings().Select(e => new MeetingDto
             {
                 Country = e.Country.Name,
                 Attendees = e.Attendees.Select(a => new AttendeeDto { Id = a.Id, Name = a.Name, Email = a.Email }).ToArray(),
