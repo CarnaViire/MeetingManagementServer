@@ -5,4 +5,4 @@ The goal of the Web API is to provide meeting dates with maximal attendance for 
 Implemented using ASP.NET Core.
 
 * [REST API for specifying and manging partners](PartnersRestApi.md)
-* [API for building meeting dates](MeetingApi.md)
+* [API for computing meeting dates](MeetingApi.md)
