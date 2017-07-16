@@ -51,5 +51,5 @@ Success response example:
 }
 ```
 
-  Error response example:
-  * `Country is not specified correctly` - country is null or there is no country with specified name
+  Error response examples:
+  * `404` - no country found with the specified name

@@ -45,7 +45,7 @@ namespace MeetingManagementServer.Controllers
             var countryEntity = _countryRepository.GetAll().SingleOrDefault(c => c.Name == country);
             if (countryEntity == null)
             {
-                return NotFound("Contry is not found");
+                return NotFound("Country is not found");
             }
 
             var meeting = _meetingManager.BuildMeeting(countryEntity);

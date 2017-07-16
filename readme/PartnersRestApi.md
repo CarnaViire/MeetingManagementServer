@@ -60,6 +60,9 @@ REST API for specifying and managing partners
   } 
   ```
 
+  Error response examples:
+  * `404` - no partner found with the specified id
+
 ## Create partner
 
   Creates a new partner. Returns json data about the created partner.
@@ -95,11 +98,12 @@ REST API for specifying and managing partners
   } 
   ```
 
-  Error response example:
-  * `Partner is not specified correctly` - could not parse JSON
-  * `Country is not specified correctly` - country is null or whitespace
-  * `To update an existing partner, use PUT request` - non-zero Id specified in JSON
-  * `Email is not unique` - there is already a partner with specified email
+  Error response examples:
+  * `400`
+    * `Partner is not specified correctly` - could not parse JSON
+    * `Country is not specified correctly` - country is null or whitespace
+    * `To update an existing partner, use PUT request` - non-zero Id specified in JSON
+    * `Email is not unique` - there is already a partner with the specified email
 
 ## Update partner
 
@@ -127,7 +131,7 @@ REST API for specifying and managing partners
   ```
 
   Success response example:
-
+  
   ```
   {
     "id": 1,
@@ -142,11 +146,13 @@ REST API for specifying and managing partners
   } 
   ```
 
-  Error response example:
-  * `Partner is not specified correctly` - could not parse JSON
-  * `Country is not specified correctly` - country is null or whitespace
-  * `To create a new partner, use POST request` - zero Id specified in URL
-  * `Email is not unique` - there is already a partner with specified email
+  Error response examples:
+  * `400`
+    * `Partner is not specified correctly` - could not parse JSON
+    * `Country is not specified correctly` - country is null or whitespace
+    * `To add a new partner, use POST request` - zero Id specified in URL
+    * `Email is not unique` - there is already a partner with the specified email
+  * `404` - no partner found with the specified id
 
 ## Delete partner
 
@@ -174,8 +180,13 @@ REST API for specifying and managing partners
   } 
   ```
 
+  Error response examples:  
+  * `404` - no partner found with the specified id
+
 ## Delete all partners
 
   Deletes all partners and countries.
 
   `DELETE` **/api/partners**
+
+  Success response: `200`
