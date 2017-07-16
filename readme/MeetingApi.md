@@ -16,12 +16,29 @@ Success response example:
   {
     "country": "USA",
     "startDate": "2017-01-09T00:00:00",
-    "attendees": []
+    "attendees": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john.doe@jd.com"
+      },
+      {
+        "id": 10,
+        "name": "Kathy Abrams",
+        "email": "kathy.abrams@ka.com"
+      }
+    ]
   },
   {
     "country": "UK",
     "startDate": "2017-03-20T00:00:00",
-    "attendees": []
+    "attendees": [
+      {
+        "id": 2,
+        "name": "Mary Smith",
+        "email": "mary.smith@ms.com"
+      }
+    ]
   },
   {
     "country": "CANADA",
@@ -47,7 +64,13 @@ Success response example:
 {
   "country": "UK",
   "startDate": "2017-03-20T00:00:00",
-  "attendees": []
+  "attendees": [      
+      {
+        "id": 2,
+        "name": "Mary Smith",
+        "email": "mary.smith@ms.com"
+      }
+    ]
 }
 ```
 
