@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeetingManagementServer", "src\MeetingManagementServer.csproj", "{578BDDF7-F103-424E-8972-968E1474AA51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingManagementServer.Tests", "MeetingManagementServer.Tests\MeetingManagementServer.Tests.csproj", "{2154DF50-19FC-4FEF-AA20-336001212594}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingManagementServer.Tests", "test\MeetingManagementServer.Tests\MeetingManagementServer.Tests.csproj", "{2154DF50-19FC-4FEF-AA20-336001212594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
