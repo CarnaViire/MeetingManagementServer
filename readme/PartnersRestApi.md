@@ -1,11 +1,13 @@
 # Partners REST API
 
+REST API for specifying and managing partners
+
 ## Show all partners
 
   Returns json data about all partners.
 
   `GET` **/api/partners**
-  
+
   Success response example:
 
   ```
@@ -32,19 +34,19 @@
     }
   ]
   ```
-   
-  ## Show partner
+  
+## Show partner
 
   Returns json data about a specific partner.
 
   `GET` **/api/partners/[id]**
-  
+
   URL Params:
 
   **id** `integer` - required
 
   Success response example:
-  
+
   ```
   {
     "id": 1,
@@ -57,13 +59,13 @@
     ]
   } 
   ```
-  
-  ## Create partner
+
+## Create partner
 
   Creates a new partner. Returns json data about the created partner.
 
   `POST` **/api/partners**
-  
+
   Request body example:
 
   ```
@@ -79,7 +81,7 @@
   ```
 
   Success response example:
-  
+
   ```
   {
     "id": 1,
@@ -92,23 +94,23 @@
     ]
   } 
   ```
-  
+
   Error response example:
   * `Partner is not specified correctly` - could not parse JSON
   * `Country is not specified correctly` - country is null or whitespace
   * `To update an existing partner, use PUT request` - non-zero Id specified in JSON
   * `Email is not unique` - there is already a partner with specified email
-  
-  ## Update partner
+
+## Update partner
 
   Updates an existing partner. Returns json data about the updated partner.
 
   `PUT` **/api/partners/[id]**
-  
+
   URL Params:
 
   **id** `integer` - required
-  
+
   Request body example:
 
   ```
@@ -125,7 +127,7 @@
   ```
 
   Success response example:
-  
+
   ```
   {
     "id": 1,
@@ -139,25 +141,25 @@
     ]
   } 
   ```
-  
+
   Error response example:
   * `Partner is not specified correctly` - could not parse JSON
   * `Country is not specified correctly` - country is null or whitespace
   * `To create a new partner, use POST request` - zero Id specified in URL
   * `Email is not unique` - there is already a partner with specified email
 
-  ## Delete partner
+## Delete partner
 
   Deletes a partner. Returns json data about the deleted partner.
 
   `DELETE` **/api/partners/[id]**
-  
+
   URL Params:
 
   **id** `integer` - required
-  
+
   Success response example:
-  
+
   ```
   {
     "id": 1,
@@ -172,8 +174,8 @@
   } 
   ```
 
-  ## Delete all partners
+## Delete all partners
 
-  Deletes all partners
+  Deletes all partners and countries.
 
   `DELETE` **/api/partners**
