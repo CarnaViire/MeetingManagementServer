@@ -42,7 +42,7 @@ namespace MeetingManagementServer.Controllers
         [HttpGet]
         public IActionResult Build([FromQuery]string country)
         {
-            var countryEntity = _countryRepository.GetAll().SingleOrDefault(c => c.Name == country);
+            var countryEntity = _countryRepository.GetAll().SingleOrDefault(c => c.Name == country.ToUpperInvariant());
             if (countryEntity == null)
             {
                 return NotFound("Country is not found");
